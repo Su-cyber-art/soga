@@ -5,6 +5,10 @@ green='\033[0;32m'
 yellow='\033[0;33m'
 plain='\033[0m'
 
+SOGA_VERSION="2.13.7"
+SOGA_REPO="Su-cyber-art/soga"
+RAW_BASE="https://raw.githubusercontent.com/${SOGA_REPO}/master"
+
 # check root
 [[ $EUID -ne 0 ]] && echo -e "${red}错误：${plain} 必须使用root用户运行此脚本！\n" && exit 1
 
@@ -26,29 +30,18 @@ if [ "$(getconf WORD_BIT)" != '32' ] && [ "$(getconf LONG_BIT)" != '64' ] ; then
     exit 2
 fi
 
-echo -e "${green}开始下载 soga-cmd 最新版${plain}"
+echo -e "${green}开始安装 soga 管理脚本（固定 soga v${SOGA_VERSION}）${plain}"
 
-if [ $# == 0 ] ;then
-    wget -N --no-check-certificate -O /usr/bin/soga https://github.com/vaxilu/soga-cmd/releases/latest/download/soga-cmd-linux-${arch}
-    if [[ $? -ne 0 ]]; then
-        echo -e "${red}下载 soga-cmd 失败，请确保你的服务器能够下载 Github 的文件${plain}"
-        exit 1
-    fi
-else
-    last_version=$1
-    url="https://github.com/vaxilu/soga-cmd/releases/download/${last_version}/soga-cmd-linux-${arch}"
-    echo -e "开始下载 soga-cmd $1"
-    wget -N --no-check-certificate -O /usr/bin/soga ${url}
-    if [[ $? -ne 0 ]]; then
-        echo -e "${red}下载 soga-cmd $1 失败，请确保此版本存在${plain}"
-        exit 1
-    fi
+curl -o /usr/bin/soga -Ls "${RAW_BASE}/soga.sh"
+if [[ $? -ne 0 ]]; then
+    echo -e "${red}下载 soga 管理脚本失败，请确认网络可访问 Github${plain}"
+    exit 1
 fi
 
 chmod +x /usr/bin/soga
 
 last_version="$(/usr/bin/soga -v 2>/dev/null || echo "unknown")"
-echo -e "${green}soga-cmd v${last_version}${plain} 安装完成"
+echo -e "${green}soga 管理脚本 ${last_version}${plain} 安装完成"
 
 echo -e ""
-echo -e "执行 ${green}soga${plain} 命令运行管理脚本"
+echo -e "执行 ${green}soga${plain} 命令运行管理脚本；安装/更新时将固定安装 soga v${SOGA_VERSION}"

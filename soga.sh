@@ -5,7 +5,11 @@ green='\033[0;32m'
 yellow='\033[0;33m'
 plain='\033[0m'
 
-version="v1.0.0"
+version="v1.0.1"
+SOGA_VERSION="2.13.7"
+SOGA_REPO="Su-cyber-art/soga"
+RAW_BASE="https://raw.githubusercontent.com/${SOGA_REPO}/master"
+
 
 # check root
 [[ $EUID -ne 0 ]] && echo -e "${red}错误: ${plain} 必须使用root用户运行此脚本！\n" && exit 1
@@ -84,7 +88,7 @@ before_show_menu() {
 }
 
 install() {
-    bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/soga/master/install.sh)
+    bash <(curl -Ls "${RAW_BASE}/install.sh")
     if [[ $? == 0 ]]; then
         if [[ $# == 0 ]]; then
             start
@@ -95,20 +99,10 @@ install() {
 }
 
 update() {
-    if [[ $# == 0 ]]; then
-        echo && echo -n -e "输入指定版本(默认最新版): " && read version
-    else
-        version=$2
+    if [[ -n "$2" && "$2" != "${SOGA_VERSION}" ]]; then
+        echo -e "${yellow}已忽略指定版本 $2，本仓库固定安装 v${SOGA_VERSION}${plain}"
     fi
-#    confirm "本功能会强制重装当前最新版，数据不会丢失，是否继续?" "n"
-#    if [[ $? != 0 ]]; then
-#        echo -e "${red}已取消${plain}"
-#        if [[ $1 != 0 ]]; then
-#            before_show_menu
-#        fi
-#        return 0
-#    fi
-    bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/soga/master/install.sh) $version
+    bash <(curl -Ls "${RAW_BASE}/install.sh")
     if [[ $? == 0 ]]; then
         echo -e "${green}更新完成，已自动重启 soga，请使用 soga log 查看运行日志${plain}"
         exit
@@ -238,7 +232,7 @@ show_log() {
 }
 
 update_shell() {
-    wget -O /usr/bin/soga -N --no-check-certificate https://github.com/vaxilu/soga/raw/master/soga.sh
+    wget -O /usr/bin/soga -N --no-check-certificate "${RAW_BASE}/soga.sh"
     if [[ $? != 0 ]]; then
         echo ""
         echo -e "${red}下载脚本失败，请检查本机能否连接 Github${plain}"
@@ -343,8 +337,8 @@ show_usage() {
     echo "soga enable             - 设置 soga 开机自启"
     echo "soga disable            - 取消 soga 开机自启"
     echo "soga log                - 查看 soga 日志"
-    echo "soga update             - 更新 soga 最新版"
-    echo "soga update x.x.x       - 安装 soga 指定版本"
+    echo "soga update             - 重新安装固定版本 v${SOGA_VERSION}"
+    echo "soga update x.x.x       - 已禁用指定版本参数，始终安装 v${SOGA_VERSION}"
     echo "soga config             - 显示配置文件内容"
     echo "soga config xx=xx yy=yy - 自动设置配置文件"
     echo "soga install            - 安装 soga"

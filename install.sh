@@ -7,6 +7,12 @@ plain='\033[0m'
 
 cur_dir=$(pwd)
 
+SOGA_VERSION="2.13.7"
+SOGA_REPO="Su-cyber-art/soga"
+UPSTREAM_RELEASE_REPO="vaxilu/soga"
+RAW_BASE="https://raw.githubusercontent.com/${SOGA_REPO}/master"
+RELEASE_BASE="https://github.com/${UPSTREAM_RELEASE_REPO}/releases/download/${SOGA_VERSION}"
+
 # check root
 [[ $EUID -ne 0 ]] && echo -e "${red}错误：${plain} 必须使用root用户运行此脚本！\n" && exit 1
 
@@ -118,27 +124,12 @@ install_soga() {
         rm /usr/local/soga/ -rf
     fi
 
-    if  [ $# == 0 ] ;then
-#        last_version=$(curl -Ls "https://api.github.com/repos/vaxilu/soga/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
-#        if [[ ! -n "$last_version" ]]; then
-#            echo -e "${red}检测 soga 版本失败，可能是超出 Github API 限制，请稍后再试，或手动指定 soga 版本安装${plain}"
-#            exit 1
-#        fi
-        echo -e "开始安装 soga 最新版"
-        wget -N --no-check-certificate -O /usr/local/soga.tar.gz https://github.com/vaxilu/soga/releases/latest/download/soga-linux-${arch}.tar.gz
-        if [[ $? -ne 0 ]]; then
-            echo -e "${red}下载 soga 失败，请确保你的服务器能够下载 Github 的文件${plain}"
-            exit 1
-        fi
-    else
-        last_version=$1
-        url="https://github.com/vaxilu/soga/releases/download/${last_version}/soga-linux-${arch}.tar.gz"
-        echo -e "开始安装 soga v$1"
-        wget -N --no-check-certificate -O /usr/local/soga.tar.gz ${url}
-        if [[ $? -ne 0 ]]; then
-            echo -e "${red}下载 soga v$1 失败，请确保此版本存在${plain}"
-            exit 1
-        fi
+    url="${RELEASE_BASE}/soga-linux-${arch}.tar.gz"
+    echo -e "开始安装 soga v${SOGA_VERSION}"
+    wget -N --no-check-certificate -O /usr/local/soga.tar.gz ${url}
+    if [[ $? -ne 0 ]]; then
+        echo -e "${red}下载 soga v${SOGA_VERSION} 失败，请确认网络可访问 Github Release，且当前架构受支持${plain}"
+        exit 1
     fi
 
     tar zxvf soga.tar.gz
@@ -183,9 +174,9 @@ install_soga() {
     if [[ ! -f /etc/soga/routes.toml ]]; then
         cp routes.toml /etc/soga/
     fi
-    curl -o /usr/bin/soga -Ls https://raw.githubusercontent.com/vaxilu/soga/master/soga.sh
+    curl -o /usr/bin/soga -Ls "${RAW_BASE}/soga.sh"
     chmod +x /usr/bin/soga
-    curl -o /usr/bin/soga-tool -Ls https://raw.githubusercontent.com/vaxilu/soga/master/soga-tool-${arch}
+    curl -o /usr/bin/soga-tool -Ls "${RAW_BASE}/soga-tool-${arch}"
     chmod +x /usr/bin/soga-tool
     echo -e ""
     echo "soga 管理脚本使用方法: "
@@ -199,8 +190,8 @@ install_soga() {
     echo "soga disable            - 取消 soga 开机自启"
     echo "soga log                - 查看 soga 日志"
     echo "soga log n              - 查看 soga 最后 n 行日志"
-    echo "soga update             - 更新 soga"
-    echo "soga update x.x.x       - 更新 soga 指定版本"
+    echo "soga update             - 重新安装固定版本 v${SOGA_VERSION}"
+    echo "soga update x.x.x       - 已禁用指定版本参数，始终安装 v${SOGA_VERSION}"
     echo "soga config             - 显示配置文件内容"
     echo "soga config xx=xx yy=yy - 自动设置配置文件"
     echo "soga install            - 安装 soga"
@@ -218,4 +209,4 @@ fi
 echo -e "${green}开始安装${plain}"
 install_base
 install_acme
-install_soga $1
+install_soga
