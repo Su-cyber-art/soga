@@ -98,21 +98,6 @@ install() {
     fi
 }
 
-update() {
-    if [[ -n "$2" && "$2" != "${SOGA_VERSION}" ]]; then
-        echo -e "${yellow}已忽略指定版本 $2，本仓库固定安装 v${SOGA_VERSION}${plain}"
-    fi
-    bash <(curl -Ls "${RAW_BASE}/install.sh")
-    if [[ $? == 0 ]]; then
-        echo -e "${green}更新完成，已自动重启 soga，请使用 soga log 查看运行日志${plain}"
-        exit
-    fi
-
-    if [[ $# == 0 ]]; then
-        before_show_menu
-    fi
-}
-
 config() {
     soga-tool $*
 }
@@ -337,8 +322,6 @@ show_usage() {
     echo "soga enable             - 设置 soga 开机自启"
     echo "soga disable            - 取消 soga 开机自启"
     echo "soga log                - 查看 soga 日志"
-    echo "soga update             - 重新安装固定版本 v${SOGA_VERSION}"
-    echo "soga update x.x.x       - 已禁用指定版本参数，始终安装 v${SOGA_VERSION}"
     echo "soga config             - 显示配置文件内容"
     echo "soga config xx=xx yy=yy - 自动设置配置文件"
     echo "soga install            - 安装 soga"
@@ -354,46 +337,43 @@ show_menu() {
   ${green}0.${plain} 退出脚本
 ————————————————
   ${green}1.${plain} 安装 soga
-  ${green}2.${plain} 更新 soga
-  ${green}3.${plain} 卸载 soga
+  ${green}2.${plain} 卸载 soga
 ————————————————
-  ${green}4.${plain} 启动 soga
-  ${green}5.${plain} 停止 soga
-  ${green}6.${plain} 重启 soga
-  ${green}7.${plain} 查看 soga 日志
+  ${green}3.${plain} 启动 soga
+  ${green}4.${plain} 停止 soga
+  ${green}5.${plain} 重启 soga
+  ${green}6.${plain} 查看 soga 日志
 ————————————————
-  ${green}8.${plain} 设置 soga 开机自启
-  ${green}9.${plain} 取消 soga 开机自启
+  ${green}7.${plain} 设置 soga 开机自启
+  ${green}8.${plain} 取消 soga 开机自启
 ————————————————
- ${green}10.${plain} 查看 soga 版本
+  ${green}9.${plain} 查看 soga 版本
  "
     show_status
-    echo && read -p "请输入选择 [0-10]: " num
+    echo && read -p "请输入选择 [0-9]: " num
 
     case "${num}" in
         0) exit 0
         ;;
         1) check_uninstall && install
         ;;
-        2) check_install && update
+        2) check_install && uninstall
         ;;
-        3) check_install && uninstall
+        3) check_install && start
         ;;
-        4) check_install && start
+        4) check_install && stop
         ;;
-        5) check_install && stop
+        5) check_install && restart
         ;;
-        6) check_install && restart
+        6) check_install && show_log
         ;;
-        7) check_install && show_log
+        7) check_install && enable
         ;;
-        8) check_install && enable
+        8) check_install && disable
         ;;
-        9) check_install && disable
+        9) check_install && show_soga_version
         ;;
-        10) check_install && show_soga_version
-        ;;
-        *) echo -e "${red}请输入正确的数字 [0-10]${plain}"
+        *) echo -e "${red}请输入正确的数字 [0-9]${plain}"
         ;;
     esac
 }
@@ -412,8 +392,6 @@ if [[ $# > 0 ]]; then
         "disable") check_install 0 && disable 0
         ;;
         "log") check_install 0 && show_log 0 $2
-        ;;
-        "update") check_install 0 && update 0 $2
         ;;
         "config") config $*
         ;;

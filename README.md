@@ -8,7 +8,6 @@
 - 支持架构：`amd64`、`arm64`
 - 支持系统：常见 64 位 Linux 发行版（Debian / Ubuntu / CentOS 等，需 systemd）
 - 安装脚本不再拉取 `latest`，也不会根据输入参数安装其他版本
-- 管理脚本 `soga update` 也固定重新安装 `v2.13.7`
 - 二进制包、管理脚本和辅助工具均来自本仓库；Release `v2.13.7` 内置 `amd64` / `arm64` 资产
 
 ## 一键安装
@@ -38,7 +37,6 @@ soga status       # 查看状态
 soga enable       # 设置开机自启
 soga disable      # 取消开机自启
 soga log          # 查看日志
-soga update       # 重新安装固定版本 v2.13.7
 soga config       # 查看/修改配置
 soga uninstall    # 卸载
 soga version      # 查看版本
@@ -85,4 +83,4 @@ systemctl daemon-reload
 
 ## 版本策略
 
-本仓库后续安装入口统一固定为 `v2.13.7`，避免 `latest` 变化导致不同服务器安装结果不一致。若未来需要升级版本，应先在仓库中明确修改固定版本号并测试后再发布。
+本仓库后续安装入口统一固定为 `v2.13.7`，避免 `latest` 变化导致不同服务器安装结果不一致。管理菜单不提供更新入口；若未来需要升级版本，应先在仓库中明确修改固定版本号并测试后再发布。
