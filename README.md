@@ -4,12 +4,12 @@
 
 ## 说明
 
-- 固定安装版本：`v2.13.7`（上游 Release tag 为 `2.13.7`）
+- 固定安装版本：`v2.13.7`
 - 支持架构：`amd64`、`arm64`
 - 支持系统：常见 64 位 Linux 发行版（Debian / Ubuntu / CentOS 等，需 systemd）
 - 安装脚本不再拉取 `latest`，也不会根据输入参数安装其他版本
 - 管理脚本 `soga update` 也固定重新安装 `v2.13.7`
-- 二进制包固定来自上游 `vaxilu/soga` 的 `2.13.7` Release，管理脚本和辅助工具来自本仓库；当前仓库已内置 `soga-tool-amd64` / `soga-tool-arm64`
+- 二进制包、管理脚本和辅助工具均来自本仓库；Release `v2.13.7` 内置 `amd64` / `arm64` 资产
 
 ## 一键安装
 

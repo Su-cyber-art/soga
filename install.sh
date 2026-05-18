@@ -9,9 +9,8 @@ cur_dir=$(pwd)
 
 SOGA_VERSION="2.13.7"
 SOGA_REPO="Su-cyber-art/soga"
-UPSTREAM_RELEASE_REPO="vaxilu/soga"
 RAW_BASE="https://raw.githubusercontent.com/${SOGA_REPO}/master"
-RELEASE_BASE="https://github.com/${UPSTREAM_RELEASE_REPO}/releases/download/${SOGA_VERSION}"
+RELEASE_BASE="https://github.com/${SOGA_REPO}/releases/download/v${SOGA_VERSION}"
 
 # check root
 [[ $EUID -ne 0 ]] && echo -e "${red}错误：${plain} 必须使用root用户运行此脚本！\n" && exit 1
